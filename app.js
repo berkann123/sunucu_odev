@@ -1,8 +1,21 @@
 import express from "express";
+import dotenv from "dotenv";
+import conn from "./db.js";
+dotenv.config();
+// connection to the DB
+conn();
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT;
+// EJS template engine
+app.set("view engine", "ejs");
+//STATIK FILES MIDDLEWARE
+app.use(express.static("public"));
+
 app.get("/", (req, res) => {
-  res.send("INDEX SAYFASI 2");
+  res.render("index");
+});
+app.get("/about", (req, res) => {
+  res.render("about");
 });
 
 app.listen(PORT, () => {
