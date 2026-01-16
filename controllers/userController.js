@@ -1,5 +1,6 @@
 import User from "../models/usermodel.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const createuser = async (req, res) => {
   try {
@@ -32,7 +33,10 @@ const loginUser = async (req, res) => {
       });
     }
     if (same) {
-      res.status(200).send("You are loggend in");
+      res.status(200).json({
+        user,
+        token: createToken(user.id),
+      });
     } else {
       res.status(401).json({
         succeded: false,
@@ -45,6 +49,11 @@ const loginUser = async (req, res) => {
       error: error.message,
     });
   }
+};
+const createToken = (userId) => {
+  return jwt.sign({ userId }, process.env.JWT_SECRET, {
+    expiresIn: "1d",
+  });
 };
 
 export { createuser, loginUser };
