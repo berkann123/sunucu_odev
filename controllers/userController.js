@@ -5,10 +5,7 @@ import jwt from "jsonwebtoken";
 const createuser = async (req, res) => {
   try {
     const newUser = await User.create(req.body);
-    res.status(201).json({
-      succeded: true,
-      user: newUser,
-    });
+    res.redirect("/login");
   } catch (error) {
     res.status(500).json({
       succeded: false,
@@ -33,10 +30,12 @@ const loginUser = async (req, res) => {
       });
     }
     if (same) {
-      res.status(200).json({
-        user,
-        token: createToken(user.id),
+      const token = createToken(user.id);
+      res.cookie("jwt", token, {
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 * 24,
       });
+      res.redirect("/users/dashboard");
     } else {
       res.status(401).json({
         succeded: false,
@@ -55,5 +54,8 @@ const createToken = (userId) => {
     expiresIn: "1d",
   });
 };
+const getDashboardPage = (req, res) => {
+  res.render("dashboard", { link: "dasboard" });
+};
 
-export { createuser, loginUser };
+export { createuser, loginUser, getDashboardPage };

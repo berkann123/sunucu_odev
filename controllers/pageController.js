@@ -1,4 +1,5 @@
 const getIndexPage = (req, res) => {
+  console.log("request user :::", req.user);
   res.render("index", { link: "index" });
 };
 const getAboutPage = (req, res) => {
@@ -10,4 +11,10 @@ const getRegisterpage = (req, res) => {
 const getLoginpage = (req, res) => {
   res.render("login", { link: "login" });
 };
-export { getIndexPage, getAboutPage, getRegisterpage, getLoginpage };
+const getLogout = (req, res) => {
+  res.cookie("jwt", "", {
+    maxAge: 1,
+  });
+  res.redirect("/");
+};
+export { getIndexPage, getAboutPage, getRegisterpage, getLoginpage, getLogout };
