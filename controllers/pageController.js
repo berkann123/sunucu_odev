@@ -4,4 +4,7 @@ const getIndexPage = (req, res) => {
 const getAboutPage = (req, res) => {
   res.render("about", { link: "about" });
 };
-export { getIndexPage, getAboutPage };
+const getRegisterpage = (req, res) => {
+  res.render("register", { link: "register" });
+};
+export { getIndexPage, getAboutPage, getRegisterpage };
