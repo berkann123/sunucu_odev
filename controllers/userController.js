@@ -1,16 +1,27 @@
-import User from "../models/usermodel.js";
+import User from "../models/userModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+
+import Photo from "../models/photoModels.js";
 
 const createuser = async (req, res) => {
   try {
     const newUser = await User.create(req.body);
-    res.redirect("/login");
+    res.status(201).json({ newUser: newUser_id });
   } catch (error) {
-    res.status(500).json({
-      succeded: false,
-      error: error.message,
-    });
+    console.log("Error", error);
+    let errors2 = {};
+    if (error.code === 11000) {
+      errors2.email = "The email is already register";
+    }
+
+    if (error.name === "ValidationError") {
+      Object.keys(error.errors).forEach((key) => {
+        errors2[key] = error.errors[key].message;
+      });
+    }
+    console.log("ERRORS 2:::", errors2);
+    res.status(400).json(errors2);
   }
 };
 
@@ -54,8 +65,23 @@ const createToken = (userId) => {
     expiresIn: "1d",
   });
 };
-const getDashboardPage = (req, res) => {
-  res.render("dashboard", { link: "dasboard" });
+const getDashboardPage = async (req, res) => {
+  // try {
+  // Dashboard'da fotoğrafları göstermek için DB'den çekmemiz lazım
+  const photos = await Photo.find({ user: res.locals.user._id });
+  res.status(200).render("dashboard", {
+    link: "dashboard",
+    photos, // Eğer fotoğraf yoksa bile bu artık '[]' (boş dizi) olur, undefined olmaz.
+  });
+  // } catch (error) {
+  //   console.log("dashboard hatası", error);
+
+  //   res.status(500).render("dashboard", {
+  //     link: "dashboard",
+  //     photos: [],
+  //     error: error.message,
+  //   });
+  // }
 };
 
 export { createuser, loginUser, getDashboardPage };
